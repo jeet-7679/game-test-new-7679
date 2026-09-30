@@ -1,0 +1,265 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Country Flag Battle</title><style>
+*{box-sizing:border-box;margin:0}
+html,body{background:#010208;color:#e8f6ff;font-family:"Segoe UI",system-ui,sans-serif;overflow-x:hidden}
+button{font:inherit;cursor:pointer;color:#e8f6ff;background:#0d2440;border:1px solid #3cf;border-radius:10px;padding:10px 14px;min-height:44px}
+button:active{transform:scale(.96)}
+#game{max-width:820px;margin:0 auto;padding:8px;min-height:100dvh;display:flex;flex-direction:column;gap:6px;background:radial-gradient(circle at 50% 30%,#0b1636,#03060f);border-inline:1px solid #123;position:relative}
+#mute{position:fixed;top:8px;right:8px;z-index:30;width:46px;padding:0;font-size:20px;border-radius:50%;background:#071426cc}
+#qual{border:1px solid #2bd;border-radius:14px;padding:6px 8px;background:#06122a;box-shadow:0 0 14px #0cf3}
+#qual h2{font-size:clamp(12px,3.4vw,16px);letter-spacing:2px;text-align:center;color:#7ff;margin-bottom:4px}
+#qlist{display:grid;grid-auto-flow:column;grid-template-rows:repeat(5,auto);grid-template-columns:1fr 1fr;gap:2px 10px;min-height:5.2em;font-size:clamp(11px,3vw,15px)}
+.row{display:flex;align-items:center;gap:5px;padding:2px 4px;border-radius:6px;white-space:nowrap;overflow:hidden}
+.row b{color:#8ab;min-width:2.3em}.row img{width:20px;height:14px;object-fit:cover}.row span{flex:1;overflow:hidden;text-overflow:ellipsis}.row em{color:#4f8;font-style:normal;font-weight:700;font-size:.85em}
+.row.new{background:#fd33;box-shadow:0 0 12px #fc4;animation:pop .6s}
+@keyframes pop{from{transform:scale(1.15);background:#fff6}}
+#bar1{display:flex;justify-content:space-between;font-weight:700;font-size:clamp(12px,3.6vw,18px);padding:0 4px}
+#tmr{color:#fc4}#qc{color:#7ff}
+#arena{position:relative;width:min(100%,calc(100dvh - 340px));min-width:260px;aspect-ratio:1;margin:0 auto;border:3px solid #aff;border-radius:24px;overflow:hidden;background:radial-gradient(#0a1838,#02040c);box-shadow:0 0 26px #0ff7,inset 0 0 40px #0ff2}
+#cv{width:100%;height:100%;display:block}
+#ov{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:#000a;z-index:5}
+#ov.on{display:flex}
+.card{text-align:center;padding:18px 26px;border:3px solid #fc4;border-radius:18px;background:#0a0f22e6;box-shadow:0 0 30px #fc4a;animation:zin .5s;max-width:90%}
+.card h2{color:#fc4;letter-spacing:3px;font-size:clamp(20px,6vw,34px);text-shadow:0 0 14px #fa0}
+.card p{font-size:clamp(14px,4vw,22px);margin-top:6px}.card img{width:clamp(90px,28vw,170px);margin:10px 0;border:2px solid #fff8;box-shadow:0 0 22px #fc4}
+.card h3{font-size:clamp(20px,6vw,32px)}
+@keyframes zin{from{transform:scale(.5);opacity:0}}
+#notif{position:absolute;left:50%;top:10%;transform:translateX(-50%);z-index:4;display:none;align-items:center;gap:8px;padding:6px 16px;border-top:2px solid #f54;border-bottom:2px solid #f54;background:#200808dd;font-size:clamp(13px,4vw,20px);white-space:nowrap}
+#notif img{width:30px}#notif small{color:#f65;font-weight:800;letter-spacing:2px}
+#notif.show{display:flex;animation:nf 1.6s forwards}
+@keyframes nf{0%{opacity:0;transform:translateX(-50%) scale(.6)}15%{opacity:1;transform:translateX(-50%) scale(1.05)}80%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:0;transform:translateX(-50%) scale(.95)}}
+#prog{height:10px;border-radius:6px;background:#12203a;overflow:hidden;border:1px solid #2bd}
+#pb{display:block;height:100%;width:100%;background:linear-gradient(90deg,#0cf,#7ff);transition:width .4s}
+#cnt{text-align:center;font-weight:700;font-size:clamp(12px,3.6vw,17px)}
+#strip{width:100%;height:42px}
+#spots{text-align:center;color:#fc4;font-weight:700;font-size:clamp(13px,4vw,19px)}
+footer{display:flex;justify-content:space-between;gap:8px;padding:6px 4px;font-size:clamp(11px,3.2vw,15px);color:#9bd;border-top:1px solid #234}
+footer b{color:#7ff;letter-spacing:2px}
+#start{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:#02061299;backdrop-filter:blur(2px)}
+#start[hidden]{display:none}
+.box{text-align:center;padding:30px 22px;border:3px solid #7ff;border-radius:22px;background:#030a1ce0;animation:glow 2.4s infinite;max-width:92%}
+.box h1{font-size:clamp(26px,8vw,50px);letter-spacing:3px;color:#dff;text-shadow:0 0 12px #0ff,0 0 30px #08f}
+.box p{margin:12px 0;color:#9de;letter-spacing:3px;font-size:clamp(13px,4vw,19px)}
+.box button{font-size:clamp(16px,5vw,24px);padding:14px 30px;background:#0a3a60;box-shadow:0 0 20px #0cf}
+@keyframes glow{50%{border-color:#fc4;box-shadow:0 0 34px #fc48}0%,100%{box-shadow:0 0 22px #0ff8}}
+#champ{position:fixed;inset:0;z-index:35;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#000b;text-align:center;padding:12px}
+#champ[hidden]{display:none}
+#champ h2{font-size:clamp(26px,8vw,46px);color:#fc4;text-shadow:0 0 20px #fa0}
+#cimg{width:min(70vw,360px);border:3px solid #fc4;box-shadow:0 0 50px #fc4;animation:zoom 4s ease-out}
+#cemo{font-size:120px}
+@keyframes zoom{from{transform:scale(.3);opacity:0}}
+#cname{font-size:clamp(26px,8vw,50px);transition:opacity .8s}.hid{opacity:0}
+#champ p{color:#9de;letter-spacing:3px}
+.btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#dev{position:fixed;left:8px;top:8px;z-index:60;width:230px;max-height:92dvh;overflow:auto;background:#050c1cf2;border:1px solid #0cf;border-radius:12px;padding:8px;font-size:12px}
+#dev[hidden]{display:none}
+#dev button{margin:2px;padding:4px 8px;min-height:30px;font-size:12px}
+#dev h4{margin:8px 0 2px;color:#7ff}#dev label{display:block}
+@media(max-width:600px){#game{padding:4px;border:0}#arena{border-radius:18px;width:100%}}
+
+</style></head><body>
+<div id="game">
+<button id="mute" aria-label="Sound">🔊</button>
+<section id="qual"><h2>QUALIFIED FOR FINAL</h2><div id="qlist"></div></section>
+<div id="bar1"><span id="tmr">ELIMINATIONS IN 00:00</span><span id="qc">0 / 70 QUALIFIED</span></div>
+<div id="arena"><canvas id="cv"></canvas><div id="notif"></div><div id="ov"></div></div>
+<div id="prog"><i id="pb"></i></div><div id="cnt"></div>
+<canvas id="strip"></canvas>
+<div id="spots"></div>
+<footer><b id="brand">COUNTRY FLAG BATTLE</b><span id="rl"></span></footer>
+</div>
+<div id="start"><div class="box"><h1>COUNTRY FLAG BATTLE</h1><p id="sub">FLAGS • ONE WINNER</p><p id="ld">LOADING FLAGS...</p><button id="play" disabled>▶ CLICK TO PLAY</button></div></div>
+<div id="champ" hidden><h2>🏆 CHAMPION 🏆</h2><img id="cimg" alt=""><span id="cemo"></span><h3 id="cname" class="hid"></h3><p>COUNTRY FLAG BATTLE<br>CHAMPION</p><div class="btns"><button id="again">🔄 PLAY AGAIN</button><button id="newb">🏆 NEW BATTLE</button></div></div>
+<div id="dev" hidden></div>
+<script>
+'use strict';
+/* ===== COUNTRY DATA ===== */
+const RAW="af:Afghanistan|al:Albania|dz:Algeria|ad:Andorra|ao:Angola|ag:Antigua and Barbuda|ar:Argentina|am:Armenia|au:Australia|at:Austria|az:Azerbaijan|bs:Bahamas|bh:Bahrain|bd:Bangladesh|bb:Barbados|by:Belarus|be:Belgium|bz:Belize|bj:Benin|bt:Bhutan|bo:Bolivia|ba:Bosnia and Herzegovina|bw:Botswana|br:Brazil|bn:Brunei|bg:Bulgaria|bf:Burkina Faso|bi:Burundi|cv:Cape Verde|kh:Cambodia|cm:Cameroon|ca:Canada|cf:Central African Republic|td:Chad|cl:Chile|cn:China|co:Colombia|km:Comoros|cg:Congo|cd:DR Congo|cr:Costa Rica|ci:Ivory Coast|hr:Croatia|cu:Cuba|cy:Cyprus|cz:Czechia|dk:Denmark|dj:Djibouti|dm:Dominica|do:Dominican Republic|ec:Ecuador|eg:Egypt|sv:El Salvador|gq:Equatorial Guinea|er:Eritrea|ee:Estonia|sz:Eswatini|et:Ethiopia|fj:Fiji|fi:Finland|fr:France|ga:Gabon|gm:Gambia|ge:Georgia|de:Germany|gh:Ghana|gr:Greece|gd:Grenada|gt:Guatemala|gn:Guinea|gw:Guinea-Bissau|gy:Guyana|ht:Haiti|hn:Honduras|hu:Hungary|is:Iceland|in:India|id:Indonesia|ir:Iran|iq:Iraq|ie:Ireland|il:Israel|it:Italy|jm:Jamaica|jp:Japan|jo:Jordan|kz:Kazakhstan|ke:Kenya|ki:Kiribati|kp:North Korea|kr:South Korea|kw:Kuwait|kg:Kyrgyzstan|la:Laos|lv:Latvia|lb:Lebanon|ls:Lesotho|lr:Liberia|ly:Libya|li:Liechtenstein|lt:Lithuania|lu:Luxembourg|mg:Madagascar|mw:Malawi|my:Malaysia|mv:Maldives|ml:Mali|mt:Malta|mh:Marshall Islands|mr:Mauritania|mu:Mauritius|mx:Mexico|fm:Micronesia|md:Moldova|mc:Monaco|mn:Mongolia|me:Montenegro|ma:Morocco|mz:Mozambique|mm:Myanmar|na:Namibia|nr:Nauru|np:Nepal|nl:Netherlands|nz:New Zealand|ni:Nicaragua|ne:Niger|ng:Nigeria|mk:North Macedonia|no:Norway|om:Oman|pk:Pakistan|pw:Palau|ps:Palestine|pa:Panama|pg:Papua New Guinea|py:Paraguay|pe:Peru|ph:Philippines|pl:Poland|pt:Portugal|qa:Qatar|ro:Romania|ru:Russia|rw:Rwanda|kn:Saint Kitts and Nevis|lc:Saint Lucia|vc:Saint Vincent|ws:Samoa|sm:San Marino|st:Sao Tome and Principe|sa:Saudi Arabia|sn:Senegal|rs:Serbia|sc:Seychelles|sl:Sierra Leone|sg:Singapore|sk:Slovakia|si:Slovenia|sb:Solomon Islands|so:Somalia|za:South Africa|ss:South Sudan|es:Spain|lk:Sri Lanka|sd:Sudan|sr:Suriname|se:Sweden|ch:Switzerland|sy:Syria|tj:Tajikistan|tz:Tanzania|th:Thailand|tl:Timor-Leste|tg:Togo|to:Tonga|tt:Trinidad and Tobago|tn:Tunisia|tr:Turkey|tm:Turkmenistan|tv:Tuvalu|ug:Uganda|ua:Ukraine|ae:United Arab Emirates|gb:United Kingdom|us:United States|uy:Uruguay|uz:Uzbekistan|vu:Vanuatu|va:Vatican City|ve:Venezuela|vn:Vietnam|ye:Yemen|zm:Zambia|zw:Zimbabwe";
+const $=id=>document.getElementById(id),rnd=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),pick=a=>a[(Math.random()*a.length)|0];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const COUNTRIES=RAW.split('|').map(s=>{const i=s.indexOf(':'),c=s.slice(0,i);return{code:c,name:s.slice(i+1),img:null,emoji:String.fromCodePoint(...[...c.toUpperCase()].map(ch=>127397+ch.charCodeAt(0)))}});
+const N=COUNTRIES.length,W=600,Q=70,ROUND_SEC=9,FIN_INT=2.6;
+const ones="zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split(' '),tens="_ _ twenty thirty forty fifty sixty seventy eighty ninety".split(' ');
+const words=n=>n<20?ones[n]:n<100?tens[n/10|0]+(n%10?' '+ones[n%10]:''):ones[n/100|0]+' hundred'+(n%100?' '+words(n%100):'');
+const fi=c=>`<img src="https://flagcdn.com/w40/${c.code}.png" alt="" onerror="this.replaceWith(document.createTextNode('${c.emoji}'))">`;
+/* ===== GAME STATE ===== */
+const G={state:'LOADING',flags:[],qualified:[],round:1,roundT:0,elimLeft:0,elimTotal:0,finT:0,ftT:0,ftDone:false,speed:1,acc:0,alive:0,dying:0,total:N,shake:0,gen:0};
+function later(fn,ms){const g=G.gen;setTimeout(()=>{if(g===G.gen)fn()},ms)}
+const aliveList=()=>G.flags.filter(f=>f.st==='alive');
+/* ===== FLAG LOADING ===== */
+function loadFlags(){return new Promise(res=>{let n=0,fin=false;const done=()=>{$('ld').textContent=`LOADING FLAGS... ${n}/${N}`;if(!fin&&n>=N){fin=true;res()}};
+COUNTRIES.forEach(c=>{const im=new Image();im.onload=()=>{c.img=im;n++;done()};im.onerror=()=>{c.img=null;n++;done()};im.src=`https://flagcdn.com/w80/${c.code}.png`});
+setTimeout(()=>{if(!fin){fin=true;res()}},9000)})}
+/* ===== PARTICLES ===== */
+const P=[];
+function burst(x,y,n,col,sp,life,g=0){for(let i=0;i<n&&P.length<600;i++){const a=rnd(0,6.283),s=rnd(.3,1)*sp;P.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:life*rnd(.6,1),m:life,c:col,g,z:rnd(1.5,3.5)})}}
+function updP(dt){for(let i=P.length-1;i>=0;i--){const p=P[i];p.l-=dt;if(p.l<=0){P.splice(i,1);continue}p.vy+=p.g*dt;p.x+=p.vx*dt;p.y+=p.vy*dt}}
+/* ===== AUDIO MANAGER ===== */
+const AM={c:null,vol:{music:.2,sfx:.4,voice:.9},on:{music:1,sfx:1,voice:1},muted:false,hits:[],ph:'ambient',mt:0,
+init(){if(this.c){if(this.c.state==='suspended')this.c.resume();return}
+ try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=this.c=new C();this.m=c.createGain();this.m.connect(c.destination);this.mus=c.createGain();this.sfx=c.createGain();this.mus.connect(this.m);this.sfx.connect(this.m);
+ const b=c.createBuffer(1,c.sampleRate,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;this.nb=b;this.apply();c.resume();setInterval(()=>this.tick(),250)}catch(e){this.c=null}},
+apply(){if(!this.c)return;const m=this.muted;this.mus.gain.value=m||!this.on.music?0:this.vol.music;this.sfx.gain.value=m||!this.on.sfx?0:this.vol.sfx},
+t(f,d,ty='sine',v=.3,sl=0,dl=0,bus){if(!this.c)return;try{bus=bus||this.sfx;const c=this.c,t=c.currentTime+dl,o=c.createOscillator(),g=c.createGain();o.type=ty;o.frequency.setValueAtTime(f,t);if(sl)o.frequency.exponentialRampToValueAtTime(Math.max(20,sl),t+d);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(bus);o.start(t);o.stop(t+d+.05)}catch(e){}},
+n(d,v,f0,f1,dl=0,ty='lowpass',bus){if(!this.c)return;try{bus=bus||this.sfx;const c=this.c,t=c.currentTime+dl,s=c.createBufferSource(),fl=c.createBiquadFilter(),g=c.createGain();s.buffer=this.nb;s.loop=true;fl.type=ty;fl.frequency.setValueAtTime(f0,t);fl.frequency.exponentialRampToValueAtTime(f1,t+d);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+Math.min(.02,d/3));g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(fl);fl.connect(g);g.connect(bus);s.start(t);s.stop(t+d+.05)}catch(e){}},
+click(){this.t(880,.06,'square',.25);this.t(1320,.05,'square',.15,0,.05)},
+col(s,force){if(!this.c)return;const now=performance.now();if(force)this.hits=[];this.hits=this.hits.filter(x=>now-x<1000);if(this.hits.length>=9||(this.hits.length&&now-this.hits[this.hits.length-1]<45))return;this.hits.push(now);
+ const p=rnd(.9,1.1),v=clamp(.05+s/800,.05,.5),k=(Math.random()*4)|0;
+ if(s<110)this.t([900,760,1000,820][k]*p,.04,'triangle',v);
+ else if(s<220){this.t([420,360,500,450][k]*p,.07,['square','triangle','sawtooth','square'][k],v*.5,200*p);this.n(.04,v*.4,3000,800)}
+ else{this.t(130*p,.22,'sine',v*1.2,45);this.n(.12,v*.6,1500,200);this.t(2000*p,.03,'square',v*.2)}},
+elim(){this.n(.15,.5,2500,300);this.t(420,.5,'sawtooth',.25,70);this.t(60,.5,'sine',.7,35)},
+qual(){[523,659,784,1047].forEach((f,i)=>this.t(f,.28,'triangle',.3,0,i*.07));this.t(130,.3,'sine',.5,80);this.n(.3,.15,8000,2000,.2,'highpass')},
+rw(){this.t(70,.6,'sine',.9,40);this.n(.35,.4,4000,300);this.t(220,1,'sawtooth',.18,900);[523,659,784,1047].forEach((f,i)=>this.t(f,.6,'triangle',.25,0,.9+i*.02))},
+finals(){this.n(2.3,.6,200,5000);this.t(50,1.2,'sawtooth',.4,30,2.2);this.n(.5,.8,1200,100,2.2);[392,494,587,784].forEach(f=>this.t(f,.9,'triangle',.25,0,2.3))},
+two(){this.t(50,.16,'sine',1,35);this.t(50,.16,'sine',.8,35,.2);this.n(1.5,.3,100,2500)},
+champ(){this.t(60,1,'sine',.9,40);this.n(1.5,.3,500,9000,.2);[523,659,784,1047,1319].forEach((f,i)=>this.t(f,.5,'triangle',.3,0,i*.14+.3));for(let i=0;i<10;i++)this.t(rnd(1500,3500),.15,'sine',.12,0,1+i*.12)},
+phase(p){this.ph=p},
+tick(){if(!this.c||this.c.state!=='running'||this.muted||!this.on.music)return;const m=this.mt++,ph=this.ph,b=this.mus,sc=[110,131,147,165,196,220];
+ if(ph==='ambient'||ph==='qual'){if(m%10===0){const f=pick(sc);this.t(f,3.2,'sine',.6,0,0,b);this.t(f*1.5,3.2,'triangle',.18,0,0,b)}if(ph==='qual'&&m%4===0)this.t(55,.5,'sine',.5,0,0,b)}
+ else if(ph==='finals'){if(m%2===0)this.t(m%8?65:55,.35,'sawtooth',.28,0,0,b);this.t(sc[m%6]*4,.12,'square',.06,0,0,b)}
+ else if(ph==='two'){if(m%4===0){this.t(50,.16,'sine',1,35,0,b);this.t(50,.16,'sine',.8,35,.2,b)}}
+ else if(ph==='champ')this.t([523,659,784,1047][m%4],.3,'triangle',.22,0,0,b)}};
+/* ===== VOICE MANAGER (queue + priority) ===== */
+const VM={q:[],cur:null,v:null,ok:false,rate:1,
+init(){try{if(!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;this.ok=true;const pk=()=>{const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));this.v=vs.find(v=>/Google US English|Daniel|Samantha|Aaron|Guy|Alex/i.test(v.name))||vs[0]||null};pk();speechSynthesis.onvoiceschanged=pk}catch(e){this.ok=false}},
+say(text,pri=2,pause=0){if(!this.ok||!AM.on.voice||AM.muted)return;
+ if(pri<3&&(this.q.length>=3||this.q.some(x=>x.pri>=3)))return;
+ if(pri>=3){this.q=this.q.filter(x=>x.pri>=pri);if(this.cur&&this.cur.pri<pri){try{speechSynthesis.cancel()}catch(e){}this.cur=null}}
+ this.q.push({text,pri,pause,ts:Date.now()});this.pump()},
+pump(){if(this.cur)return;let it;while((it=this.q.shift())){if(it.pri<3&&Date.now()-it.ts>5000)continue;break}if(!it)return;this.cur=it;
+ try{const u=new SpeechSynthesisUtterance(it.text);if(this.v)u.voice=this.v;u.lang='en-US';u.rate=this.rate;u.pitch=.95;u.volume=clamp(AM.vol.voice,0,1);let done=false,tm;
+ const fin=()=>{if(done)return;done=true;clearTimeout(tm);setTimeout(()=>{if(this.cur===it){this.cur=null;this.pump()}},it.pause||120)};
+ u.onend=fin;u.onerror=fin;tm=setTimeout(fin,2500+it.text.length*110/this.rate);speechSynthesis.speak(u)}catch(e){this.cur=null}},
+clear(){this.q=[];this.cur=null;try{speechSynthesis.cancel()}catch(e){}},
+announce(t,p,pa){this.say(t,p,pa)},
+announceElimination(n){this.say(pick(['%s has been eliminated!','%s eliminated!','%s is out!']).replace('%s',n),2)},
+announceQualification(n){this.say(n+' qualifies for the final!',2)},
+announceFinals(){this.say('Finals begin.',4,700);this.say(words(G.total)+' flags remain.',4)},
+announceFinalTwo(a,b){this.say('Two flags remain.',4,500);this.say(a+'...',4,500);this.say('and '+b+'.',4)},
+announceRoundWinner(n,k){this.say('Round winner...',3,500);this.say(n+'!',3,300);this.say('Qualified number '+words(k)+'.',3)},
+announceChampion(n){this.say('And we have a winner...',5,900);this.say('The champion is...',5,900);this.say(n+'!',5,500);this.say(n+' wins Country Flag Battle!',5)}};
+/* ===== PHYSICS & COLLISION ===== */
+function makeFlag(c,i){return{id:i,c,name:c.name,code:c.code,x:0,y:0,vx:0,vy:0,w:34,h:23,r:14,st:'alive',kind:'',hp:100,sf:rnd(.8,1.25),t:0,pulse:0,hue:(i*47)%360}}
+function place(f){f.x=rnd(30,W-30);f.y=rnd(30,W-30);const a=rnd(0,6.283),s=rnd(80,170);f.vx=Math.cos(a)*s;f.vy=Math.sin(a)*s}
+const targetSize=()=>clamp(Math.sqrt(.36*W*W/Math.max(G.alive,1)/.67),26,72);
+function hit(a,b,s,x,y){if(s<30)return;const k=G.state==='FINAL_TWO'?3:1;a.hp=Math.max(0,a.hp-s*.02*rnd(.6,1.4)*k/a.sf);b.hp=Math.max(0,b.hp-s*.02*rnd(.6,1.4)*k/b.sf);
+ if(s>80){a.pulse=b.pulse=1;burst(x,y,s>200?8:3,'#bff',s>200?110:60,.35)}AM.col(s);if(s>260)G.shake=Math.max(G.shake,6)}
+function collide(a,b){let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy);const m=a.r+b.r;if(d>=m)return;if(d<.001){dx=1;dy=0;d=1}
+ const nx=dx/d,ny=dy/d,o=m-d;a.x-=nx*o/2;a.y-=ny*o/2;b.x+=nx*o/2;b.y+=ny*o/2;const vn=(a.vx-b.vx)*nx+(a.vy-b.vy)*ny;
+ if(vn>0){a.vx-=vn*nx;a.vy-=vn*ny;b.vx+=vn*nx;b.vy+=vn*ny;const im=rnd(-25,25);a.vx+=ny*im;a.vy-=nx*im;b.vx-=ny*im;b.vy+=nx*im;hit(a,b,vn,a.x+nx*a.r,a.y+ny*a.r)}}
+function physics(dt){const F=G.flags,ts=targetSize(),ft=G.state==='FINAL_TWO';let dy=0;
+ for(const f of F){if(f.st==='alive'){f.w+=(ts-f.w)*Math.min(1,dt*2);f.h=f.w*.67;f.r=f.w*.42;
+  f.vx+=(Math.random()-.5)*220*dt;f.vy+=(Math.random()-.5)*220*dt;const d=1-.25*dt;f.vx*=d;f.vy*=d;
+  let s=Math.hypot(f.vx,f.vy);if(!(s>0)){const a=rnd(0,6.283);f.vx=Math.cos(a)*100;f.vy=Math.sin(a)*100;s=100}
+  const mn=ft?110:75,mx=ft?300:200;if(s<mn||s>mx){const k=clamp(s,mn,mx)/s;f.vx*=k;f.vy*=k}
+  f.x+=f.vx*dt;f.y+=f.vy*dt;const hw=f.w/2,hh=f.h/2;
+  if(f.x<hw){f.x=hw;f.vx=Math.abs(f.vx)}else if(f.x>W-hw){f.x=W-hw;f.vx=-Math.abs(f.vx)}
+  if(f.y<hh){f.y=hh;f.vy=Math.abs(f.vy)}else if(f.y>W-hh){f.y=W-hh;f.vy=-Math.abs(f.vy)}
+  f.pulse=Math.max(0,f.pulse-dt*5)}else if(f.st==='dying'){f.t+=dt;dy++;if(f.t>.95)f.st='gone'}}
+ const al=F.filter(f=>f.st==='alive');
+ if(ft&&al.length===2){const[a,b]=al,dx=b.x-a.x,dy2=b.y-a.y,d=Math.hypot(dx,dy2)||1;a.vx+=dx/d*140*dt;a.vy+=dy2/d*140*dt;b.vx-=dx/d*140*dt;b.vy-=dy2/d*140*dt}
+ for(let i=0;i<al.length;i++)for(let j=i+1;j<al.length;j++){const a=al[i],b=al[j];if(Math.abs(b.x-a.x)>a.r+b.r)continue;collide(a,b)}
+ G.alive=al.length;G.dying=dy}
+/* ===== TOURNAMENT / ELIMINATION / QUALIFICATION ===== */
+const eRound=r=>Math.round((N-Q)*r/Q)-Math.round((N-Q)*(r-1)/Q);
+const score=f=>f.hp+f.sf*8+rnd(0,6);
+function beginRound(){G.elimTotal=G.elimLeft=eRound(G.round);G.roundT=0}
+function eliminate(f){f.st='dying';f.kind='elim';f.t=0;AM.elim();VM.announceElimination(f.name);burst(f.x,f.y,10,'#f74',120,.6);
+ const n=$('notif');n.innerHTML=`${fi(f.c)}<b>${f.name.toUpperCase()}</b><small>ELIMINATED</small>`;n.classList.remove('show');void n.offsetWidth;n.classList.add('show');
+ G.alive--;if(G.state==='FINALS'&&G.alive>2&&G.alive%10===0)VM.say(words(G.alive)+' flags remain.',2)}
+function eliminateLowest(){const al=aliveList();if(al.length<2)return;const s=al.map(f=>[score(f),f]).sort((a,b)=>a[0]-b[0]);eliminate(s[0][1])}
+function tourney(dt){const s=G.state;
+ if(s==='QUALIFYING'){G.roundT+=dt;
+  if(G.alive===0&&G.dying===0){startFinals();return}
+  if(G.elimLeft>0&&G.roundT>=ROUND_SEC*(G.elimTotal-G.elimLeft+1)/(G.elimTotal+1)){eliminateLowest();G.elimLeft--}
+  else if(G.elimLeft===0&&G.roundT>=ROUND_SEC&&G.dying===0)roundWinner()}
+ else if(s==='FINALS'){if(G.alive<=2&&G.dying===0){startFinalTwo();return}
+  if(G.alive>2){G.finT+=dt;if(G.finT>=FIN_INT){G.finT=0;eliminateLowest()}}}
+ else if(s==='FINAL_TWO'){if(!G.ftDone){G.ftT+=dt;const al=aliveList();if(G.ftT>1.5&&(al.some(f=>f.hp<=0)||G.ftT>16)){G.ftDone=true;eliminateLowest()}}
+  else if(G.alive<=1&&G.dying===0)champion()}}
+function showOv(h){$('ov').innerHTML=h;$('ov').className='on'}
+const hideOv=()=>{$('ov').className=''};
+function roundWinner(){const al=aliveList();if(!al.length){startFinals();return}
+ const f=al.map(x=>[score(x),x]).sort((a,b)=>b[0]-a[0])[0][1];G.state='ROUND_WINNER';f.st='dying';f.kind='qual';f.t=0;G.qualified.push(f.c);const n=G.qualified.length;
+ AM.rw();VM.announceRoundWinner(f.name,n);burst(W/2,W/2,40,'#fc4',200,1.2);
+ showOv(`<div class="card"><h2>ROUND WINNER</h2><img src="https://flagcdn.com/w160/${f.code}.png" alt="" onerror="this.style.display='none'"><h3>${f.name}</h3><p>QUALIFIED #${n} / ${Q}</p></div>`);
+ later(()=>{hideOv();AM.qual();renderQual(true);if(n>=Q)startFinals();else{G.round++;G.state='QUALIFYING';beginRound()}},clamp(2800/G.speed,1100,3200))}
+function startFinals(skip){G.state='FINALS_INTRO';hideOv();G.flags=G.qualified.map(makeFlag);G.flags.forEach(f=>{place(f);f.hp=100});G.total=G.flags.length;G.alive=G.total;G.round=Q+1;G.finT=0;AM.phase('finals');
+ if(skip){G.state='FINALS';return}
+ AM.finals();VM.announceFinals();G.shake=8;burst(W/2,W/2,60,'#fc4',260,1.4);
+ showOv(`<div class="card"><h2>FINALS BEGIN</h2><p>${G.total} FLAGS REMAIN</p></div>`);later(()=>{hideOv();G.state='FINALS'},3600)}
+function startFinalTwo(){const al=aliveList();if(al.length<2){champion();return}G.state='FINAL_TWO';G.ftT=0;G.ftDone=false;AM.phase('two');AM.two();VM.announceFinalTwo(al[0].name,al[1].name);
+ showOv(`<div class="card"><h2>LAST FLAG STANDING</h2><p>2 FLAGS LEFT</p></div>`);later(hideOv,2500)}
+function champion(){const w=G.flags.find(f=>f.st==='alive')||{name:G.qualified[0].name,code:G.qualified[0].code,c:G.qualified[0]};
+ G.state='CHAMPION';hideOv();AM.phase('champ');AM.champ();VM.announceChampion(w.name);G.shake=14;
+ $('cimg').style.display='';$('cemo').textContent='';$('cimg').onerror=()=>{$('cimg').style.display='none';$('cemo').textContent=w.c.emoji};$('cimg').src=`https://flagcdn.com/w320/${w.code}.png`;
+ $('cname').textContent=w.name.toUpperCase();$('cname').classList.add('hid');$('champ').hidden=false;later(()=>$('cname').classList.remove('hid'),3400)}
+/* ===== UI MANAGER ===== */
+function renderQual(fresh){const q=G.qualified,s=Math.max(0,q.length-10);$('qlist').innerHTML=q.slice(s).map((c,i)=>`<div class="row${fresh&&s+i===q.length-1?' new':''}"><b>#${s+i+1}</b>${fi(c)}<span>${c.name}</span><em>WIN</em></div>`).join('')}
+const mmss=s=>{s=Math.max(0,Math.ceil(s));return String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+function updUI(){const s=G.state;let tm=0;
+ if(s==='QUALIFYING')tm=(ROUND_SEC-G.roundT)/G.speed;else if(s==='FINALS')tm=(FIN_INT-G.finT)/G.speed;else if(s==='FINAL_TWO')tm=(16-G.ftT)*2/G.speed;
+ $('tmr').textContent='ELIMINATIONS IN '+mmss(tm);$('qc').textContent=`${G.qualified.length} / ${Q} QUALIFIED`;
+ $('pb').style.width=(G.alive/G.total*100)+'%';$('cnt').textContent=`${G.alive} / ${G.total} FLAGS LEFT`;
+ const fin=s==='FINALS'||s==='FINALS_INTRO'||s==='FINAL_TWO'||s==='CHAMPION';
+ $('rl').textContent=`ROUND ${G.round} • ${fin?'FINAL':'QUALIFYING'}`;
+ $('spots').textContent=s==='FINAL_TWO'?'LAST FLAG STANDING • 2 FLAGS LEFT':G.alive===1&&fin?'1 FLAG REMAINING':fin?`ROUND ${G.round} • ${G.alive} FLAGS LEFT`:`ROUND ${G.round} • ${Math.max(0,Q-G.qualified.length)} SPOTS LEFT`}
+/* ===== RENDER ===== */
+const cv=$('cv'),ctx=cv.getContext('2d'),sc=$('strip'),sctx=sc.getContext('2d');let DPR=1;
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);const a=$('arena').clientWidth;cv.width=cv.height=Math.round(a*DPR);sc.width=Math.round(sc.clientWidth*DPR);sc.height=Math.round(42*DPR)}
+function drawFlag(f){let s=1,a=1,gl=null;if(f.st==='dying'){const t=f.t;gl=f.kind==='qual'?'255,210,60':'255,70,20';if(t>.35){const u=(t-.35)/.6;s=f.kind==='qual'?1+u*.5:Math.max(.05,1-u*.9);a=1-u}}
+ ctx.save();ctx.translate(f.x,f.y);ctx.scale(s,s);ctx.globalAlpha=Math.max(0,a);const w=f.w,h=f.h;
+ if(gl){ctx.fillStyle=`rgba(${gl},.55)`;ctx.fillRect(-w/2-4,-h/2-4,w+8,h+8)}
+ if(f.pulse>0){ctx.fillStyle=`rgba(160,255,255,${f.pulse*.6})`;ctx.fillRect(-w/2-2,-h/2-2,w+4,h+4)}
+ const im=f.c.img;if(im)ctx.drawImage(im,-w/2,-h/2,w,h);else{ctx.fillStyle=`hsl(${f.hue},60%,38%)`;ctx.fillRect(-w/2,-h/2,w,h);ctx.font=`${h*.8}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(f.c.emoji,0,0)}
+ ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=1;ctx.strokeRect(-w/2,-h/2,w,h);ctx.restore()}
+function draw(){const w=cv.width,k=w/W;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,w,w);ctx.setTransform(k,0,0,k,(Math.random()-.5)*G.shake*k,(Math.random()-.5)*G.shake*k);
+ for(const f of G.flags)if(f.st!=='gone')drawFlag(f);
+ for(const p of P){ctx.globalAlpha=Math.max(0,p.l/p.m);ctx.fillStyle=p.c;ctx.fillRect(p.x,p.y,p.z,p.z)}ctx.globalAlpha=1}
+let stripT=0;
+function drawStrip(){const W2=sc.clientWidth,fl=G.flags.filter(f=>f.st==='alive'),n=fl.length,cols=Math.max(1,Math.ceil(n/3)),sw=clamp(Math.floor(W2/cols)-1,3,18),sh=Math.max(2,Math.floor(sw*.67));
+ sctx.setTransform(DPR,0,0,DPR,0,0);sctx.clearRect(0,0,W2,42);fl.forEach((f,i)=>{const x=(i%cols)*(sw+1),y=((i/cols)|0)*(sh+1);if(f.c.img)sctx.drawImage(f.c.img,x,y,sw,sh);else{sctx.fillStyle=`hsl(${f.hue},60%,40%)`;sctx.fillRect(x,y,sw,sh)}})}
+/* ===== MAIN LOOP ===== */
+let last=0,uiT=0;
+function loop(t){requestAnimationFrame(loop);const dr=Math.min(.05,(t-last)/1000||0);last=t;
+ if(G.state!=='LOADING'){let ts=G.state==='START'?1:G.speed;if(G.state==='FINAL_TWO')ts*=.5;if(G.state==='CHAMPION')ts=0;
+  G.acc+=dr*ts;let n=0;while(G.acc>=1/60&&n<30){physics(1/60);if(G.state!=='START')tourney(1/60);G.acc-=1/60;n++}if(n>=30)G.acc=0;
+  if(G.flags.some(f=>f.st==='gone'))G.flags=G.flags.filter(f=>f.st!=='gone');
+  if(G.state==='START'&&Math.random()<.1)burst(rnd(0,W),rnd(0,W),1,'#7ff',10,2);
+  if(G.state==='CHAMPION')for(let i=0;i<3;i++)P.push({x:rnd(0,W),y:-5,vx:rnd(-30,30),vy:rnd(40,120),l:4,m:4,c:pick(['#fc4','#f55','#5cf','#5f8','#fff']),g:90,z:rnd(3,6)});
+  updP(dr);G.shake*=.9;if(G.shake<.2)G.shake=0;
+  uiT+=dr;if(uiT>.1){uiT=0;updUI()}stripT+=dr;if(stripT>.25){stripT=0;drawStrip()}}
+ draw()}
+/* ===== GAME STATE MANAGER ===== */
+function resetGame(){G.gen++;VM.clear();G.qualified=[];G.round=1;G.roundT=0;G.elimLeft=G.elimTotal=0;G.finT=G.ftT=0;G.acc=0;G.shake=0;G.total=N;P.length=0;
+ G.flags=shuffle(COUNTRIES.slice()).map(makeFlag);G.flags.forEach(place);G.alive=N;G.dying=0;hideOv();$('champ').hidden=true;$('notif').className='';renderQual();AM.phase('ambient')}
+function beginPlay(){resetGame();G.state='QUALIFYING';AM.phase('qual');beginRound();VM.say('Country Flag Battle begins.',3)}
+function toStart(){resetGame();G.state='START';$('start').hidden=false}
+function startGame(){AM.init();VM.init();AM.click();AM.t(200,.6,'sawtooth',.2,800);$('start').hidden=true;beginPlay()}
+/* ===== DEVELOPER CONTROLS ===== */
+function ensureAudio(){AM.init();VM.init()}
+function forceFinals(){ensureAudio();G.gen++;$('start').hidden=true;$('champ').hidden=true;G.qualified=shuffle(COUNTRIES.slice()).slice(0,Q);renderQual();startFinals()}
+function forceTwo(){if(G.state==='START'||G.state==='QUALIFYING'||G.state==='ROUND_WINNER'||G.state==='CHAMPION'){forceFinals();G.gen++;hideOv();G.state='FINALS'}
+ const al=shuffle(aliveList());al.slice(2).forEach(f=>f.st='gone');G.state='FINALS';startFinalTwo()}
+function forceWin(){if(G.state!=='FINAL_TWO')forceTwo();G.ftDone=true;eliminateLowest()}
+function buildDev(){const d=$('dev');const add=(l,fn)=>{const b=document.createElement('button');b.textContent=l;b.onclick=()=>{ensureAudio();fn(b)};d.appendChild(b)};const h=t=>{const e=document.createElement('h4');e.textContent=t;d.appendChild(e)};
+ h('GAME SPEED');[.5,1,2,5,10].forEach(s=>add(s+'x',()=>G.speed=s));
+ h('AUDIO TEST');add('TEST COLLISION',()=>AM.col(90,1));add('TEST STRONG COLLISION',()=>AM.col(320,1));add('TEST ELIMINATION',()=>{AM.elim();VM.announceElimination('Germany')});add('TEST QUALIFICATION',()=>{AM.qual();VM.announceQualification('Morocco')});
+ add('TEST ROUND WINNER',()=>{AM.rw();VM.announceRoundWinner('Liechtenstein',11)});add('TEST FINALS',()=>{AM.finals();VM.announceFinals()});add('TEST FINAL TWO',()=>{AM.two();VM.announceFinalTwo('Brazil','Japan')});add('TEST CHAMPION',()=>{AM.champ();VM.announceChampion('United States')});add('TEST VOICE',()=>VM.say('Country Flag Battle voice test.',5));
+ h('TOGGLES');['voice','music','sfx'].forEach(k=>add(k.toUpperCase()+' ON/OFF',()=>{AM.on[k]=AM.on[k]?0:1;AM.apply();if(k==='voice'&&!AM.on.voice)VM.clear()}));
+ const sl=(l,min,max,st,val,fn)=>{const w=document.createElement('label');w.textContent=l;const i=document.createElement('input');i.type='range';i.min=min;i.max=max;i.step=st;i.value=val;i.style.width='100%';i.oninput=()=>{fn(+i.value)};w.appendChild(i);d.appendChild(w)};
+ sl('SPEECH RATE',.6,1.6,.05,1,v=>VM.rate=v);sl('VOICE VOLUME',0,1,.05,AM.vol.voice,v=>AM.vol.voice=v);sl('MUSIC VOLUME',0,.6,.02,AM.vol.music,v=>{AM.vol.music=v;AM.apply()});sl('SFX VOLUME',0,1,.02,AM.vol.sfx,v=>{AM.vol.sfx=v;AM.apply()});
+ h('CONTROLS');add('SKIP ROUND',()=>{if(G.state==='QUALIFYING'){G.elimLeft=0;G.roundT=ROUND_SEC}else if(G.state==='FINALS')G.finT=99});
+ add('ELIMINATE RANDOM FLAG',()=>{const al=aliveList();if(al.length>1)eliminate(pick(al))});add('FORCE FINALS',forceFinals);add('FORCE FINAL TWO',forceTwo);add('FORCE WINNER',forceWin);add('RESET GAME',toStart)}
+/* ===== INIT ===== */
+function setMute(m){AM.muted=m;AM.apply();$('mute').textContent=m?'🔇':'🔊';if(m)VM.clear();try{localStorage.setItem('cfb_mute',m?'1':'0')}catch(e){}}
+window.addEventListener('resize',resize);
+$('mute').onclick=()=>{setMute(!AM.muted)};
+$('play').onclick=startGame;$('again').onclick=()=>{AM.click();beginPlay()};$('newb').onclick=()=>{AM.click();toStart()};
+$('brand').ondblclick=()=>{$('dev').hidden=!$('dev').hidden};
+document.addEventListener('keydown',e=>{if((e.key==='d'||e.key==='D')&&!/INPUT|TEXTAREA/.test(e.target.tagName))$('dev').hidden=!$('dev').hidden});
+try{if(localStorage.getItem('cfb_mute')==='1')setMute(true)}catch(e){}
+$('sub').textContent=N+' FLAGS • ONE WINNER';buildDev();resize();requestAnimationFrame(loop);
+loadFlags().then(()=>{resetGame();G.state='START';$('ld').textContent=N+' FLAGS READY';$('play').disabled=false});
+
+</script></body></html>
